@@ -1,0 +1,182 @@
+/* browse.css — full stylesheet
+   If Tailwind is loaded after this file it may override rules.
+   Recommended: include tailwind BEFORE this stylesheet, or keep this file (uses !important where needed).
+*/
+
+/* base */
+:root{
+  --blue-900: #102868;
+  --blue-800: #1e3a8a;
+  --blue-700: #1e40af;
+  --muted: #475569;
+  --bg: #eef3ff;
+}
+
+html,body{height:100%;margin:0;padding:0;background:var(--bg);font-family:'Poppins',sans-serif;color:#0f172a;}
+
+/* ============================
+   NAVBAR
+   ============================ */
+header.navbar{
+  background: var(--blue-800) !important;
+  color: #ffffff !important;
+  padding: 15px 30px !important;
+  display:flex; justify-content:space-between; align-items:center;
+  box-shadow: 0 6px 18px rgba(14, 37, 88, 0.12);
+  position: sticky; top: 0; z-index: 60;
+}
+header.navbar .logo{font-size:18px;font-weight:600;display:flex;align-items:center;gap:10px;}
+.nav-right{display:flex;align-items:center;gap:18px;}
+
+/* welcome text */
+.welcome{margin:0;color:#f8fafc;}
+.welcome span{font-weight:600;color:#fff;}
+
+/* notification button */
+.notif-btn{position:relative;background:transparent;border:0;cursor:pointer;color:#fff;}
+.notif-count{position:absolute;top:-6px;right:-6px;background:#ef4444;color:#fff;border-radius:999px;padding:2px 6px;font-size:11px}
+
+/* notification dropdown */
+.notif-dropdown{
+  position:absolute; right:0; top:44px; width:240px; background:#fff; color:#0f172a;
+  border-radius:12px; padding:10px; box-shadow:0 8px 30px rgba(2,6,23,0.12);
+  display:none; /* toggled via JS */
+}
+.notif-dropdown.show{display:block;}
+.notif-dropdown .notif-title{font-weight:700;margin-bottom:8px;color:var(--blue-900)}
+
+/* logout link override (Tailwind utilities may conflict) */
+.logout-btn{text-decoration:none;color:#ffffff !important;padding:6px 10px;border-radius:6px;}
+
+/* ============================
+   LAYOUT: SIDEBAR + CONTENT
+   ============================ */
+.main-container{display:flex;min-height:calc(100vh - 64px);} /* account for header height */
+
+/* SIDEBAR */
+.sidebar{
+  width:260px;
+  background: linear-gradient(180deg, var(--blue-700), var(--blue-800));
+  color:#fff;
+  padding:28px 18px;
+  box-shadow: 2px 0 16px rgba(14,37,88,0.06);
+  display:flex; flex-direction:column; justify-content:space-between;
+  transition:width .25s ease;
+}
+.sidebar nav{display:flex;flex-direction:column;gap:6px;}
+.sidebar-link{
+  display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;
+  color:#f8fafc;text-decoration:none;font-weight:500;
+  transition:all .18s ease;
+}
+.sidebar-link i{width:18px;height:18px;opacity:0.95;}
+.sidebar-link:hover{transform:translateX(6px); background: rgba(255,255,255,0.08);}
+.sidebar-link.active{background: rgba(255,255,255,0.14);font-weight:700;}
+
+/* logout bottom */
+.logout-bottom{margin-top:18px;padding:10px 12px;border-radius:8px;color:#fee2e2;background:transparent;text-decoration:none;display:inline-flex;align-items:center;gap:8px;}
+.logout-bottom:hover{background:rgba(255,255,255,0.06)}
+
+/* CONTENT AREA */
+.content-area{
+  flex:1;padding:34px 36px;box-sizing:border-box;
+}
+
+/* dashboard box (white panel) */
+.dashboard-box{
+  background:#ffffff;border-radius:14px;padding:26px;box-shadow:0 8px 28px rgba(2,6,23,0.06);
+}
+
+/* headings */
+.section-title{color:var(--blue-700);font-size:24px;margin:0 0 6px 0;font-weight:700;}
+.section-desc{color:var(--muted);margin-bottom:18px;font-size:14px;}
+
+/* ============================
+   FILTER BAR
+   ============================ */
+.filter-box{display:flex;gap:12px;margin-bottom:20px;align-items:center;}
+.search-input, .filter-select{
+  padding:10px 12px;border-radius:10px;border:1px solid #e6eefc;background:#fff;
+  font-size:14px;color:#0f172a;box-shadow:inset 0 1px 0 rgba(16,24,40,0.02);
+}
+.search-input{flex:1;min-width:160px;}
+.filter-select{min-width:160px;}
+
+/* ============================
+   PET GRID & CARDS
+   ============================ */
+.pet-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+  gap:20px;
+}
+
+/* Each pet card */
+.pet-card{
+  background:linear-gradient(180deg,#c7ddf3,#c7ddf3);
+  border-radius:14px;
+  overflow:hidden;
+  box-shadow:0 8px 24px rgba(2,6,23,0.06);
+  display:flex;
+  flex-direction:column;
+  transition:transform .28s cubic-bezier(.2,.9,.2,1), box-shadow .28s;
+  min-height:360px;
+}
+
+/* hover */
+.pet-card:hover{
+  transform:translateY(-8px) scale(1.01);
+  box-shadow:0 18px 40px rgba(2,6,23,0.12);
+}
+
+/* IMAGE — strong selector to override Tailwind if present */
+.pet-card > img, .pet-card img.pet-img {
+  display:block;
+  width:100%;
+  height:220px;
+  object-fit:contain !important;   /* prevent crop/zoom */
+  background: linear-gradient(180deg,#c7ddf3,#c7ddf3);
+  padding:10px;
+  border-bottom:1px solid rgba(30,58,138,0.06);
+}
+
+/* card inner content */
+.pet-info{
+  padding:16px 18px 18px 18px;
+  display:flex; flex-direction:column; gap:8px; flex:1;
+}
+.pet-info h3{margin:0;font-size:18px;color:var(--blue-900);font-weight:700;}
+.pet-info p{margin:0;color:var(--muted);font-size:14px;line-height:1.35;}
+
+/* short meta row */
+.meta-row{display:flex;gap:8px;align-items:center;color:#475569;font-size:13px;margin-top:6px;}
+.meta-tag{background:#eaf2ff;color:var(--blue-800);padding:6px 10px;border-radius:999px;font-weight:600;font-size:13px;}
+
+/* action area pinned to bottom */
+.card-actions{margin-top:auto;padding-top:6px;}
+.adopt-btn, .view-btn{
+  width:100%;display:inline-block;text-align:center;padding:12px;border-radius:10px;border:0;
+  background:linear-gradient(135deg,var(--blue-800),#3b82f6);color:#fff;font-weight:700;cursor:pointer;
+  transition:transform .18s, box-shadow .18s;
+  text-decoration:none;
+}
+.adopt-btn:hover{transform:translateY(-3px);box-shadow:0 8px 18px rgba(30,58,138,0.18);}
+
+/* ============================
+   RESPONSIVE
+   ============================ */
+@media (max-width: 900px){
+  .sidebar{display:none}
+  .main-container{flex-direction:column}
+  .content-area{padding:20px}
+  header.navbar{padding:12px 18px}
+}
+
+/* small */
+@media (max-width:480px){
+  .pet-card{min-height:360px}
+  .pet-card > img{height:180px}
+}
+
+/* small animation */
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}

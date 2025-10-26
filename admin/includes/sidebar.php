@@ -19,7 +19,7 @@
                     <div class="sb-nav-link-icon"><i class="fas fa-file-alt"></i></div>
                     Adoption Requests
                 </a>
-                <a class="nav-link" href="inquiries.php">
+                <a class="nav-link" href="admin_messages.php">
                     <div class="sb-nav-link-icon"><i class="fas fa-comments"></i></div>
                     Inquiries
                 </a>

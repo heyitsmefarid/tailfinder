@@ -110,7 +110,8 @@ if (isset($_POST['update']) && isset($_SESSION['user_id'])) {
 
   </nav>
   </nav>
-  <a href="../login/index.php" class="sidebar-link logout-bottom"><i data-lucide="log-out"></i> Logout</a>
+ <a href="logout.php" class="sidebar-link logout-bottom"><i data-lucide="log-out"></i> Logout</a>
+
 </aside>
 
   <main class="flex-1 p-6">

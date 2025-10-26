@@ -51,7 +51,8 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['message_content'])){
     <a href="messages.php" class="sidebar-link active"><i data-lucide="message-circle"></i> Messages</a>
     <a href="user_profile.php" class="sidebar-link"><i data-lucide="user"></i>Profile</a>
   </nav>
-  <a href="../login/index.php" class="sidebar-link logout-bottom"><i data-lucide="log-out"></i> Logout</a>
+  <a href="logout.php" class="sidebar-link logout-bottom"><i data-lucide="log-out"></i> Logout</a>
+
 </aside>
 
 <main class="content-area">

@@ -45,7 +45,8 @@
         <a href="user_profile.php" class="sidebar-link"><i data-lucide="user"></i> Profile</a>
       </nav>
 
-       <a href="../login/index.php" class="sidebar-link logout-bottom"><i data-lucide="log-out"></i> Logout</a>
+      <a href="logout.php" class="sidebar-link logout-bottom"><i data-lucide="log-out"></i> Logout</a>
+
       </a>
     </aside>
 

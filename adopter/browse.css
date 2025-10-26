@@ -162,20 +162,101 @@ header.navbar .logo{font-size:18px;font-weight:600;display:flex;align-items:cent
 }
 .adopt-btn:hover{transform:translateY(-3px);box-shadow:0 8px 18px rgba(30,58,138,0.18);}
 
-/* ============================
-   RESPONSIVE
-   ============================ */
-@media (max-width: 900px){
-  .sidebar{display:none}
-  .main-container{flex-direction:column}
-  .content-area{padding:20px}
-  header.navbar{padding:12px 18px}
+
+/* small phones (480px and below) */
+@media (max-width: 480px){
+  html, body {
+    font-size: 15px; /* slightly larger text */
+  }
+
+  header.navbar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    padding: 10px 16px;
+  }
+
+  .welcome {
+    font-size: 15px;
+  }
+
+  .pet-card {
+    min-height: 340px;
+  }
+
+  .pet-card > img {
+    height: 180px;
+  }
+
+  .pet-info h3 {
+    font-size: 16px;
+  }
+
+  .pet-info p {
+    font-size: 13px;
+  }
+
+  .adopt-btn, .view-btn {
+    font-size: 14px;
+    padding: 10px;
+  }
 }
 
-/* small */
-@media (max-width:480px){
-  .pet-card{min-height:360px}
-  .pet-card > img{height:180px}
+/* very small devices (320px and below) */
+@media (max-width: 360px){
+  html, body {
+    font-size: 16px; /* make all text larger and more legible */
+  }
+
+  header.navbar {
+    padding: 8px 12px;
+  }
+
+  .sidebar {
+    display: none;
+  }
+
+  .content-area {
+    padding: 14px;
+  }
+
+  .section-title {
+    font-size: 20px;
+  }
+
+  .section-desc {
+    font-size: 13px;
+  }
+
+  .pet-card {
+    min-height: 360px;
+  }
+
+  .pet-card > img {
+    height: 160px;
+  }
+
+  .pet-info {
+    padding: 12px;
+  }
+
+  .pet-info h3 {
+    font-size: 17px;
+  }
+
+  .pet-info p {
+    font-size: 14px;
+  }
+
+  .meta-row {
+    flex-wrap: wrap;
+    font-size: 12px;
+  }
+
+  .adopt-btn, .view-btn {
+    font-size: 15px;
+    padding: 12px;
+  }
 }
 
 /* small animation */

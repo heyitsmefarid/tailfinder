@@ -63,7 +63,6 @@ unset($_SESSION['login_error'], $_SESSION['login_success']);
     <div class="container b-container" id="b-container">
         <form id="b-form" class="form" method="POST" action="../login.php">
             <h2 class="form_title title">Sign in to Adopt Pets</h2>
-            <span class="form__span">Or use your email account</span>
             <input class="form__input" type="email" name="email" placeholder="Email" required>
             <input class="form__input" type="password" name="password" placeholder="Password" required>
             <button class="form__button button submit" type="submit">SIGN IN</button>

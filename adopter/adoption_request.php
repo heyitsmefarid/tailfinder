@@ -47,7 +47,8 @@ $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <a href="messages.php" class="sidebar-link"><i data-lucide="message-circle"></i> Messages</a>
     <a href="user_profile.php" class="sidebar-link"><i data-lucide="user"></i>Profile</a>
   </nav>
-  <a href="../login/index.php" class="sidebar-link logout-bottom"><i data-lucide="log-out"></i> Logout</a>
+  <a href="logout.php" class="sidebar-link logout-bottom"><i data-lucide="log-out"></i> Logout</a>
+
 </aside>
 
 <main class="content-area">
@@ -59,7 +60,8 @@ $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <?php else: ?>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
         <?php foreach($requests as $req): ?>
-        <div class="bg-white shadow-md rounded-lg p-4 flex flex-col items-center">
+      <div class="bg-blue-100 shadow-md rounded-lg p-4 flex flex-col items-center">
+
           <img src="../uploads/<?= htmlspecialchars($req['image']) ?>" alt="Pet Image" class="w-32 h-32 object-cover rounded-lg mb-3">
           <h3 class="font-bold text-lg"><?= htmlspecialchars($req['pet_name']) ?></h3>
           <p><strong>Type:</strong> <?= htmlspecialchars($req['type']) ?></p>

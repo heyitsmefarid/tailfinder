@@ -4,8 +4,8 @@ include '../db_connect.php';
 $conn = connectDB();
 
 if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
-    exit;
+  header("Location: login.php");
+  exit;
 }
 
 $user_id = $_SESSION['user_id'];
@@ -38,6 +38,7 @@ $pets = $pets_stmt->fetchAll(PDO::FETCH_ASSOC);
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -70,9 +71,17 @@ $pets = $pets_stmt->fetchAll(PDO::FETCH_ASSOC);
       z-index: 50;
       animation: fadeDown 0.6s ease-in-out;
     }
+
     @keyframes fadeDown {
-      from { opacity: 0; transform: translateY(-10px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     /* --- Sidebar --- */
@@ -98,10 +107,12 @@ $pets = $pets_stmt->fetchAll(PDO::FETCH_ASSOC);
       transition: all 0.2s ease;
       font-size: 0.95rem;
     }
+
     .sidebar-link:hover {
       background: rgba(255, 255, 255, 0.15);
       transform: translateX(6px);
     }
+
     .sidebar-link.active {
       background: rgba(255, 255, 255, 0.25);
       font-weight: 600;
@@ -126,23 +137,87 @@ $pets = $pets_stmt->fetchAll(PDO::FETCH_ASSOC);
       padding: 40px;
       animation: fadeIn 1s ease-out;
     }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
 
-    .dashboard-card {
-      background: white;
-      border-radius: 16px;
-      box-shadow: 0 6px 20px rgba(30, 41, 59, 0.08);
-      padding: 20px;
-      text-align: center;
-      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
-    .dashboard-card:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 14px 30px rgba(30, 41, 59, 0.12);
-    }
+.dashboard-card {
+  background: linear-gradient(135deg, #d7e7f7ff 0%, #a1c7eeff 100%);
+  border-radius: 18px;
+  box-shadow: 0 6px 20px rgba(30, 41, 59, 0.08);
+  padding: 24px 20px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.35s ease;
+  isolation: isolate; 
+}
+
+.dashboard-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top left, rgba(59,130,246,0.15), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  z-index: -1;
+}
+
+.dashboard-card:hover::before {
+  opacity: 1;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 16px 35px rgba(30, 41, 59, 0.18);
+}
+
+.dashboard-card i {
+  display: inline-block;
+  background: linear-gradient(135deg, #3b82f6, #1e40af);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  transition: transform 0.35s ease, filter 0.35s ease;
+}
+
+.dashboard-card:hover i {
+  transform: scale(1.25) rotate(8deg);
+  filter: drop-shadow(0 3px 6px rgba(59,130,246,0.4));
+}
+
+.dashboard-card h3 {
+  font-weight: 600;
+  margin-top: 8px;
+  color: #1e3a8a;
+}
+
+.dashboard-card p {
+  font-size: 1.6rem;
+  margin-top: 4px;
+  font-weight: 700;
+}
+
+.dashboard-card:hover p {
+  color: #2563eb;
+}
+.dashboard-card i {
+  background: linear-gradient(135deg, var(--accent), #1e40af);
+}
+.dashboard-card:hover i {
+  filter: drop-shadow(0 3px 6px var(--accent));
+}
+.dashboard-card:hover p {
+  color: var(--accent);
+}
+
 
     /* Carousel */
     .carousel {
@@ -151,16 +226,24 @@ $pets = $pets_stmt->fetchAll(PDO::FETCH_ASSOC);
       position: relative;
       margin-top: 1rem;
     }
+
     .carousel-track {
       display: flex;
       animation: scrollInfinite 60s linear infinite;
     }
+
     .carousel-track:hover {
       animation-play-state: paused;
     }
+
     @keyframes scrollInfinite {
-      0% { transform: translateX(0); }
-      100% { transform: translateX(-50%); }
+      0% {
+        transform: translateX(0);
+      }
+
+      100% {
+        transform: translateX(-50%);
+      }
     }
 
     .carousel article {
@@ -173,10 +256,12 @@ $pets = $pets_stmt->fetchAll(PDO::FETCH_ASSOC);
       flex: 0 0 auto;
       transition: transform 0.25s ease, box-shadow 0.25s ease;
     }
+
     .carousel article:hover {
       transform: scale(1.05);
       box-shadow: 0 10px 40px rgba(30, 58, 138, 0.15);
     }
+
     .carousel article img {
       width: 100%;
       height: 150px;
@@ -212,32 +297,34 @@ $pets = $pets_stmt->fetchAll(PDO::FETCH_ASSOC);
       </section>
 
       <!-- 🟦 Summary cards (2 by 2 layout) -->
-      <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6 mb-10">
-       <div class="dashboard-card" style="width: 350px;">
-
+      <!-- 🟦 Summary cards (2 by 2 layout) -->
+      <!-- 🟦 Summary cards (2 by 2 layout) -->
+      <section class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-10 max-w-4xl">
+        <div class="dashboard-card">
           <i data-lucide="folder" class="mx-auto text-blue-800 w-6 h-6 mb-1"></i>
           <h3 class="font-semibold text-lg">Total Requests</h3>
           <p class="text-2xl font-bold text-blue-600"><?= $total ?></p>
         </div>
-      <div class="dashboard-card" style="width: 350px;">
 
+        <div class="dashboard-card">
           <i data-lucide="clock" class="mx-auto text-yellow-600 w-6 h-6 mb-1"></i>
           <h3 class="font-semibold text-lg">Pending</h3>
           <p class="text-2xl font-bold text-yellow-500"><?= $pending ?></p>
         </div>
-       <div class="dashboard-card" style="width: 350px;">
 
+        <div class="dashboard-card">
           <i data-lucide="check-circle" class="mx-auto text-green-600 w-6 h-6 mb-1"></i>
           <h3 class="font-semibold text-lg">Approved</h3>
           <p class="text-2xl font-bold text-green-600"><?= $approved ?></p>
         </div>
-      <div class="dashboard-card" style="width: 350px;">
 
+        <div class="dashboard-card">
           <i data-lucide="x-circle" class="mx-auto text-red-600 w-6 h-6 mb-1"></i>
           <h3 class="font-semibold text-lg">Rejected</h3>
           <p class="text-2xl font-bold text-red-600"><?= $rejected ?></p>
         </div>
       </section>
+
 
       <!-- 🐾 Carousel Section -->
       <section>
@@ -269,7 +356,11 @@ $pets = $pets_stmt->fetchAll(PDO::FETCH_ASSOC);
   </div>
 
   <script>
-    if (window.lucide) lucide.createIcons();
+    document.addEventListener("DOMContentLoaded", () => {
+      if (window.lucide) lucide.createIcons();
+    });
   </script>
+
 </body>
+
 </html>

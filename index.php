@@ -5,7 +5,7 @@
 
 <body class="index-page">
 
-<?php include 'inc/header.php'; ?>
+  <?php include 'inc/header.php'; ?>
 
   <main class="main">
 
@@ -17,7 +17,7 @@
     <!-- Features Section -->
 
 
-           <?php include 'inc/guide.php'; ?>
+    <?php include 'inc/guide.php'; ?>
     <!-- Call To Action Section 
     <section id="call-to-action" class="call-to-action section">
 
@@ -173,7 +173,7 @@
                 <i class="bi bi-quote quote-icon-right"></i>
               </p>
             </div>
-          </div><!-- End testimonial item -->
+          </div>
 
           <div class="col-lg-6" data-aos="fade-up" data-aos-delay="300">
             <div class="testimonial-item">
@@ -254,24 +254,20 @@
 
     </section><!-- /Stats Section -->
 
-     <?php include 'inc/adopt.php'; ?>
+    <?php include 'inc/adopt.php'; ?>
 
-    <!-- Faq Section -->
-    
-              <?php include 'inc/faq.php'; ?>
-    
 
-    <!-- Contact Section -->
-        <?php include 'inc/contact.php'; ?>
+    <?php include 'inc/faq.php'; ?>
+>
+    <?php include 'inc/contact.php'; ?>
 
 
   </main>
 
-<?php include 'inc/footer.php'; ?>
-  <!-- Scroll Top -->
+  <?php include 'inc/footer.php'; ?>
+  
   <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
-  <!-- Vendor JS Files -->
   <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
   <script src="assets/vendor/php-email-form/validate.js"></script>
   <script src="assets/vendor/aos/aos.js"></script>
@@ -279,7 +275,6 @@
   <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
   <script src="assets/vendor/purecounter/purecounter_vanilla.js"></script>
 
-  <!-- Main JS File -->
   <script src="assets/js/main.js"></script>
 
 </body>

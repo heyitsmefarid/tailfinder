@@ -1,106 +1,122 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Email Verification</title>
-<link rel="stylesheet" href="verify.css">
-<style>
-/* Basic styling for container and messages */
-body {font-family:'Poppins',sans-serif; background:#f0f4f8; display:flex; justify-content:center; align-items:center; height:100vh;}
-.container {background:#fff;padding:40px;border-radius:15px;box-shadow:0 8px 20px rgba(0,0,0,0.1);text-align:center;width:400px;}
-h2 {color:#007BFF;}
-.otp-field input {width:40px;height:50px;margin:5px;font-size:24px;text-align:center;border-radius:8px;border:1px solid #ccc;}
-.verify-btn {margin-top:20px;padding:12px 25px;background:#007BFF;color:white;font-size:18px;border:none;border-radius:10px;cursor:pointer;transition:.3s;}
-.verify-btn:hover {background:#0056b3;}
-#message {margin-top:15px;padding:10px;border-radius:8px;display:none;}
-#message.success {background:#d4edda;color:#155724;}
-#message.error {background:#f8d7da;color:#721c24;}
-#resendBtn {background:none;border:none;color:#007BFF;cursor:pointer;font-weight:bold;}
-#resendBtn:disabled {color:gray;cursor:not-allowed;}
-</style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Email Verification</title>
+
+    <link rel="stylesheet" href="verify.css" />
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
+
 <body>
-<div class="container">
-    <h2>Email Verification</h2>
-    <p>Enter the 6-digit code we sent to your email</p>
-    <div id="message"></div>
-    <form id="verifyForm">
-        <div class="otp-field">
-            <input type="text" maxlength="1" required>
-            <input type="text" maxlength="1" required>
-            <input type="text" maxlength="1" required>
-            <input type="text" maxlength="1" required>
-            <input type="text" maxlength="1" required>
-            <input type="text" maxlength="1" required>
-        </div>
-        <input type="hidden" name="otp" id="otp">
-        <button type="submit" class="verify-btn">Verify</button>
-    </form>
-    <p>Didn't receive code? <button id="resendBtn" disabled>Resend (<span id="timer">30</span>s)</button></p>
-</div>
+    <div class="container">
+        <h2>Email Verification</h2>
+        <p>Enter the 6-digit code sent to your email</p>
 
-<script>
-// OTP input auto-focus
-const inputs = document.querySelectorAll(".otp-field input");
-inputs.forEach((input,index)=>{
-    input.addEventListener("input",()=>{
-        if(input.value.length===1 && index<inputs.length-1){inputs[index+1].focus();}
-        document.getElementById("otp").value=Array.from(inputs).map(i=>i.value).join('');
-    });
-    input.addEventListener("keydown",e=>{
-        if(e.key==="Backspace" && index>0 && input.value===""){inputs[index-1].focus();}
-    });
-});
+        <form id="verifyForm">
+            <div class="otp-field">
+                <input type="text" maxlength="1" required>
+                <input type="text" maxlength="1" required>
+                <input type="text" maxlength="1" required>
+                <input type="text" maxlength="1" required>
+                <input type="text" maxlength="1" required>
+                <input type="text" maxlength="1" required>
+            </div>
 
-// Message DOM
-function showMessage(type,text){
-    const msg=document.getElementById("message");
-    msg.innerText=text;
-    msg.className='';
-    msg.classList.add(type);
-    msg.style.display='block';
-}
+            <input type="hidden" name="otp" id="otp">
+            <button type="submit" class="verify-btn">Verify</button>
+        </form>
 
-// Verify form submit
-document.getElementById("verifyForm").addEventListener("submit",e=>{
-    e.preventDefault();
-    const formData=new FormData(e.target);
-    fetch("verify.php",{method:"POST",body:formData})
-    .then(res=>res.json())
-    .then(data=>{
-        if(data.status==="success"){
-            showMessage("success",data.message);
-            setTimeout(()=>window.location="login/index.php",2000);
-        }else{
-            showMessage("error",data.message);
-        }
-    })
-    .catch(()=>showMessage("error","Something went wrong!"));
-});
+        <p class="resend-text">
+            Didn’t receive the code?
+            <button id="resendBtn" disabled>Resend (<span id="timer">30</span>s)</button>
+        </p>
+    </div>
 
-// Resend timer
-let resendBtn=document.getElementById("resendBtn");
-let timer=document.getElementById("timer");
-let count=30;
-let interval=setInterval(()=>{
-    count--;
-    timer.innerText=count;
-    if(count<=0){clearInterval(interval);resendBtn.disabled=false;resendBtn.innerText="Resend Code";}
-},1000);
+    <script>
 
-resendBtn.addEventListener("click",()=>{
-    fetch("resend_code.php").then(res=>res.json()).then(data=>{
-        showMessage(data.status==="success"?"success":"error",data.message);
-        resendBtn.disabled=true;
-        count=30;
-        interval=setInterval(()=>{
-            count--;
-            timer.innerText=count;
-            if(count<=0){clearInterval(interval);resendBtn.disabled=false;resendBtn.innerText="Resend Code";}
-        },1000);
-    });
-});
-</script>
+        const inputs = document.querySelectorAll(".otp-field input");
+        inputs.forEach((input, index) => {
+            input.addEventListener("input", () => {
+                if (input.value.length === 1 && index < inputs.length - 1) {
+                    inputs[index + 1].focus();
+                }
+                document.getElementById("otp").value = Array.from(inputs).map(i => i.value).join('');
+            });
+            input.addEventListener("keydown", e => {
+                if (e.key === "Backspace" && !input.value && index > 0) {
+                    inputs[index - 1].focus();
+                }
+            });
+        });
+
+        const resendBtn = document.getElementById("resendBtn");
+        const timerSpan = document.getElementById("timer");
+        let countdown = 30;
+        let timer = setInterval(() => {
+            countdown--;
+            timerSpan.textContent = countdown;
+            if (countdown <= 0) {
+                clearInterval(timer);
+                resendBtn.disabled = false;
+                resendBtn.textContent = "Resend Code";
+            }
+        }, 1000);
+
+        resendBtn.addEventListener("click", async () => {
+            resendBtn.disabled = true;
+            resendBtn.textContent = "Resending...";
+            try {
+                const res = await fetch("resend_code.php");
+                const data = await res.json();
+                Swal.fire(data.status === "success" ? "Code Resent!" : "Error", data.message, data.status);
+            } catch {
+                Swal.fire("Error", "Failed to resend code", "error");
+            }
+            countdown = 30;
+            timerSpan.textContent = countdown;
+            timer = setInterval(() => {
+                countdown--;
+                timerSpan.textContent = countdown;
+                if (countdown <= 0) {
+                    clearInterval(timer);
+                    resendBtn.disabled = false;
+                    resendBtn.textContent = "Resend Code";
+                }
+            }, 1000);
+        });
+
+
+        document.getElementById("verifyForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const otp = Array.from(inputs).map(i => i.value).join('');
+            if (otp.length !== 6) {
+                Swal.fire("Incomplete", "Please enter all 6 digits.", "warning");
+                return;
+            }
+
+            try {
+                const response = await fetch("verify.php", { method: "POST", body: new FormData(e.target) });
+                const result = await response.json();
+                if (result.status === "success") {
+                    Swal.fire({
+                        icon: "success",
+                        title: "Verified!",
+                        text: result.message,
+                        showConfirmButton: false,
+                        timer: 2000
+                    }).then(() => window.location.href = "login/index.php");
+                } else {
+                    Swal.fire("Error", result.message, "error");
+                }
+            } catch {
+                Swal.fire("Error", "Server not responding.", "error");
+            }
+        });
+    </script>
 </body>
+
 </html>

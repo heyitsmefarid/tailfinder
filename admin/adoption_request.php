@@ -1,21 +1,18 @@
 <?php
 require '../db_connect.php';
 session_start();
+$conn = connectDB();
 
-
-// Handle Approve/Reject from form submission
 if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['request_id'], $_POST['action'])){
     $request_id = $_POST['request_id'];
     $action = $_POST['action'];
     $new_status = $action === 'approve' ? 'Approved' : 'Rejected';
 
-    // 1️⃣ Update adoption request status
     $stmt = $conn->prepare("UPDATE adoption_request_tbl SET adoption_status=? WHERE request_id=?");
     $stmt->execute([$new_status, $request_id]);
 
-    // 2️⃣ If approved, also mark the pet as Adopted
     if($action === 'approve'){
-        // Get the pet_id from this request
+       
         $stmtPet = $conn->prepare("SELECT pet_id FROM adoption_request_tbl WHERE request_id=?");
         $stmtPet->execute([$request_id]);
         $pet = $stmtPet->fetch(PDO::FETCH_ASSOC);
@@ -27,8 +24,6 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['request_id'], $_POST['
     }
 }
 
-
-// Fetch all adoption requests with user and pet info
 $stmt = $conn->prepare("
     SELECT r.*, 
            u.first_name, u.last_name, u.middle_initial, u.email, u.contact_number, u.street, u.barangay, u.city, u.province, u.date_registered, u.role AS user_role, u.status AS user_status,
@@ -49,15 +44,12 @@ $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 <body class="sb-nav-fixed">
 
-    <!-- Navbar -->
     <?php include 'includes/nav.php'; ?>
 
     <div id="layoutSidenav">
 
-        <!-- Sidebar -->
         <?php include 'includes/sidebar.php'; ?>
 
-        <!-- Page Content -->
         <div id="layoutSidenav_content">
             <main>
                 <div class="container-fluid px-4">
@@ -149,7 +141,6 @@ $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 </div>
             </main>
 
-            <!-- Footer -->
             <?php include 'includes/footer.php'; ?>
         </div>
     </div>

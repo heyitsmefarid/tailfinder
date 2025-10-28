@@ -1,0 +1,97 @@
+/* ============================
+   report.css — Modern Reports
+   ============================ */
+
+:root {
+  --primary: #1e3a8a;
+  --secondary: #3b82f6;
+  --light-bg: #f8fafc;
+  --table-bg: #ffffff;
+  --border: #e2e8f0;
+  --text-dark: #1e293b;
+  --text-light: #64748b;
+}
+
+body {
+  font-family: "Poppins", sans-serif;
+  background-color: var(--light-bg);
+  color: var(--text-dark);
+  padding: 40px;
+  margin: 0;
+}
+
+h2 {
+  text-align: center;
+  color: var(--primary);
+  font-size: 28px;
+  letter-spacing: 0.5px;
+  margin-bottom: 30px;
+  font-weight: 700;
+}
+
+.report-container {
+  background: var(--table-bg);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
+  border-radius: 12px;
+  overflow: hidden;
+  max-width: 1100px;
+  margin: auto;
+  border: 1px solid var(--border);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead {
+  background: var(--primary);
+  color: white;
+}
+
+th, td {
+  padding: 14px 18px;
+  text-align: left;
+}
+
+th {
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: background 0.3s ease;
+}
+
+tbody tr:hover {
+  background: #f1f5ff;
+  transform: scale(1.005);
+}
+
+td {
+  color: var(--text-dark);
+}
+
+.footer-note {
+  text-align: center;
+  color: var(--text-light);
+  font-size: 13px;
+  margin-top: 25px;
+}
+
+.back-btn {
+  display: inline-block;
+  margin-bottom: 20px;
+  text-decoration: none;
+  color: white;
+  background: var(--secondary);
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: background 0.3s;
+}
+.back-btn:hover {
+  background: var(--primary);
+}

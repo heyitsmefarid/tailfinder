@@ -1,7 +1,7 @@
 <?php
 session_start();
 require '../db_connect.php';
-
+$conn = connectDB();
 // Fetch admin data (assuming admin is user_id = 1)
 $stmt = $conn->prepare("SELECT * FROM user_tbl WHERE user_id = 1 LIMIT 1");
 $stmt->execute();

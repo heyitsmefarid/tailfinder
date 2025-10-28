@@ -1,7 +1,7 @@
 <?php
 session_start();
 require '../db_connect.php';
-
+$conn = connectDB();
 if(!isset($_SESSION['user_id'])){
     header("Location: ../login/index.html");
     exit;

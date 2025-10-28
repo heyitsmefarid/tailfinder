@@ -1,178 +1,203 @@
-<section id="adopt" class="adopt-section">
+<?php
+require_once 'db_connect.php';
+$conn = connectDB();
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Adopt a Pet</title>
+
+
+  <style>
+  /* 🌈 Adopt Section Styling */
+  #adopt {
+    background: linear-gradient(135deg, #eef6ff, #ffffff);
+    padding: 80px 0;
+  }
+
+  #adopt .section-title {
+    text-align: center;
+    margin-bottom: 40px;
+    animation: fadeInDown 0.8s ease-in-out;
+  }
+
+  #adopt .section-title h2 {
+    font-size: 2.2rem;
+    color: #1e3a8a;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+
+  #adopt .section-title p {
+    color: #475569;
+    font-size: 1rem;
+  }
+
+  /* card */
+  .pet-card {
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    transition: all 0.3s ease;
+    height: 100%;
+  }
+
+  .pet-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+  }
+
+  /* image */
+  .pet-img {
+    height: 220px;
+    overflow: hidden;
+    background: #f4f6fb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .pet-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+
+  .pet-card:hover .pet-img img {
+    transform: scale(1.08);
+  }
+
+  /* info */
+  .pet-info {
+    padding: 18px;
+    text-align: center;
+  }
+
+  .pet-info h3 {
+    font-weight: 600;
+    color: #1e3a8a;
+    margin-bottom: 6px;
+    font-size: 1.25rem;
+  }
+
+  .pet-info p {
+    color: #475569;
+    font-size: 0.95rem;
+    margin: 4px 0;
+  }
+
+  .pet-info .desc {
+    font-size: 0.9rem;
+    color: #64748b;
+    margin: 10px 0 15px;
+    min-height: 45px;
+  }
+
+  /* button */
+  .adopt-btn {
+    background: linear-gradient(135deg, #1e40af, #3b82f6);
+    color: #fff;
+    padding: 10px 25px;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    box-shadow: 0 3px 8px rgba(30, 64, 175, 0.3);
+  }
+
+  .adopt-btn:hover {
+    background: linear-gradient(135deg, #3b82f6, #60a5fa);
+    transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(30, 64, 175, 0.4);
+  }
+
+  .no-pets {
+    text-align: center;
+    color: #64748b;
+    font-size: 1.1rem;
+    padding: 40px;
+  }
+
+  @keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-25px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 992px) {
+    .pet-img { height: 200px; }
+  }
+
+  @media (max-width: 576px) {
+    #adopt { padding: 60px 15px; }
+    .pet-img { height: 180px; }
+  }
+  </style>
+</head>
+
+<body>
+
+<section id="adopt">
   <div class="container">
     <div class="section-title" data-aos="fade-up">
       <h2>Adopt a Pet</h2>
       <p>Find your perfect furry friend and give them a loving home today.</p>
     </div>
 
-    <div class="pet-grid">
-      <!-- Card 1 -->
-      <div class="pet-card">
-        <div class="pet-img">
-          <img src="https://images.unsplash.com/photo-1601758123927-9a6b6b9f3cc9?w=600" alt="Buddy">
-        </div>
-        <div class="pet-info">
-          <h3>Buddy</h3>
-          <p><strong>Breed:</strong> Labrador Retriever</p>
-          <p><strong>Age:</strong> 2 years</p>
-          <p class="desc">Playful and loyal, Buddy loves outdoor adventures and beach walks.</p>
-          <button class="adopt-btn">Adopt Now</button>
-        </div>
-      </div>
+    <div class="row g-4 justify-content-center">
+      <?php
+      // ✅ Fetch 6 random available pets
+      $stmt = $conn->prepare("SELECT * FROM pet_tbl WHERE pet_status = 'Available' ORDER BY RAND() LIMIT 6");
+      $stmt->execute();
+      $pets = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-      <!-- Card 2 -->
-      <div class="pet-card">
-        <div class="pet-img">
-          <img src="https://images.unsplash.com/photo-1518791841217-8f162f1e1131?w=600" alt="Mochi">
-        </div>
-        <div class="pet-info">
-          <h3>Mochi</h3>
-          <p><strong>Breed:</strong> Persian Cat</p>
-          <p><strong>Age:</strong> 1 year</p>
-          <p class="desc">A gentle and affectionate cat that enjoys cozy naps and soft blankets.</p>
-          <button class="adopt-btn">Adopt Now</button>
-        </div>
-      </div>
+      if ($pets) {
+        foreach ($pets as $pet) {
+          $pet_image = htmlspecialchars($pet['image'] ?? '');
+          $pet_name = htmlspecialchars($pet['pet_name'] ?? 'Unnamed');
+          $breed = htmlspecialchars($pet['breed'] ?? 'Unknown');
+          $age = htmlspecialchars($pet['age'] ?? 'Unknown');
+          $desc = htmlspecialchars($pet['description'] ?? 'A lovely pet waiting for a home.');
 
-      <!-- Card 3 -->
-      <div class="pet-card">
-        <div class="pet-img">
-          <img src="https://images.unsplash.com/photo-1543852786-1cf6624b9987?w=600" alt="Luna">
-        </div>
-        <div class="pet-info">
-          <h3>Luna</h3>
-          <p><strong>Breed:</strong> Siamese Cat</p>
-          <p><strong>Age:</strong> 2 years</p>
-          <p class="desc">Elegant and clever, Luna loves to observe and cuddle.</p>
-          <button class="adopt-btn">Adopt Now</button>
-        </div>
-      </div>
-
-      <!-- Card 4 -->
-      <div class="pet-card">
-        <div class="pet-img">
-          <img src="https://images.unsplash.com/photo-1558788353-f76d92427f16?w=600" alt="Rocky">
-        </div>
-        <div class="pet-info">
-          <h3>Rocky</h3>
-          <p><strong>Breed:</strong> German Shepherd</p>
-          <p><strong>Age:</strong> 3 years</p>
-          <p class="desc">Loyal and protective, Rocky makes a great family companion.</p>
-          <button class="adopt-btn">Adopt Now</button>
-        </div>
-      </div>
-
-      <!-- Card 5 -->
-      <div class="pet-card">
-        <div class="pet-img">
-          <img src="https://images.unsplash.com/photo-1596495577886-d920f1fb7238?w=600" alt="Coco">
-        </div>
-        <div class="pet-info">
-          <h3>Coco</h3>
-          <p><strong>Breed:</strong> Poodle</p>
-          <p><strong>Age:</strong> 1.5 years</p>
-          <p class="desc">Coco is playful, intelligent, and loves learning new tricks.</p>
-          <button class="adopt-btn">Adopt Now</button>
-        </div>
-      </div>
-
-      <!-- Card 6 -->
-      <div class="pet-card">
-        <div class="pet-img">
-          <img src="https://images.unsplash.com/photo-1546182990-dffeafbe841d?w=600" alt="Max">
-        </div>
-        <div class="pet-info">
-          <h3>Max</h3>
-          <p><strong>Breed:</strong> Beagle</p>
-          <p><strong>Age:</strong> 2 years</p>
-          <p class="desc">Curious and friendly, Max enjoys exploring and sniffing around.</p>
-          <button class="adopt-btn">Adopt Now</button>
-        </div>
-      </div>
-
-      <!-- Card 7 -->
-      <div class="pet-card">
-        <div class="pet-img">
-          <img src="https://images.unsplash.com/photo-1593134257782-e89567b7718c?w=600" alt="Bella">
-        </div>
-        <div class="pet-info">
-          <h3>Bella</h3>
-          <p><strong>Breed:</strong> Golden Retriever</p>
-          <p><strong>Age:</strong> 3 years</p>
-          <p class="desc">Loving and gentle, Bella enjoys playing fetch and meeting new friends.</p>
-          <button class="adopt-btn">Adopt Now</button>
-        </div>
-      </div>
-
-      <!-- Card 8 -->
-      <div class="pet-card">
-        <div class="pet-img">
-          <img src="https://images.unsplash.com/photo-1573865526739-10659fec78a5?w=600" alt="Milo">
-        </div>
-        <div class="pet-info">
-          <h3>Milo</h3>
-          <p><strong>Breed:</strong> Tabby Cat</p>
-          <p><strong>Age:</strong> 1 year</p>
-          <p class="desc">Energetic and playful, Milo loves chasing strings and climbing shelves.</p>
-          <button class="adopt-btn">Adopt Now</button>
-        </div>
-      </div>
-
-      <!-- Card 9 -->
-      <div class="pet-card">
-        <div class="pet-img">
-          <img src="https://images.unsplash.com/photo-1552053831-71594a27632d?w=600" alt="Charlie">
-        </div>
-        <div class="pet-info">
-          <h3>Charlie</h3>
-          <p><strong>Breed:</strong> Bulldog</p>
-          <p><strong>Age:</strong> 4 years</p>
-          <p class="desc">Calm and loyal, Charlie enjoys relaxing and short walks.</p>
-          <button class="adopt-btn">Adopt Now</button>
-        </div>
-      </div>
-
-      <!-- Card 10 -->
-      <div class="pet-card">
-        <div class="pet-img">
-          <img src="https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=600" alt="Shadow">
-        </div>
-        <div class="pet-info">
-          <h3>Shadow</h3>
-          <p><strong>Breed:</strong> Mixed</p>
-          <p><strong>Age:</strong> 2 years</p>
-          <p class="desc">Smart and loyal, Shadow is great with kids and other pets.</p>
-          <button class="adopt-btn">Adopt Now</button>
-        </div>
-      </div>
-
-      <!-- Card 11 -->
-      <div class="pet-card">
-        <div class="pet-img">
-          <img src="https://images.unsplash.com/photo-1560807707-8cc77767d783?w=600" alt="Daisy">
-        </div>
-        <div class="pet-info">
-          <h3>Daisy</h3>
-          <p><strong>Breed:</strong> Corgi</p>
-          <p><strong>Age:</strong> 2 years</p>
-          <p class="desc">Adorable and cheerful, Daisy loves cuddles and belly rubs.</p>
-          <button class="adopt-btn">Adopt Now</button>
-        </div>
-      </div>
-
-      <!-- Card 12 -->
-      <div class="pet-card">
-        <div class="pet-img">
-          <img src="https://images.unsplash.com/photo-1574158622682-e40e69881006?w=600" alt="Nala">
-        </div>
-        <div class="pet-info">
-          <h3>Nala</h3>
-          <p><strong>Breed:</strong> Husky</p>
-          <p><strong>Age:</strong> 1.5 years</p>
-          <p class="desc">Energetic and fun-loving, Nala is always ready for an adventure.</p>
-          <button class="adopt-btn">Adopt Now</button>
-        </div>
-      </div>
+          // ✅ Build correct image path
+          $image_path = 'uploads/' . basename($pet_image);
+          if (!file_exists($image_path) || empty($pet_image)) {
+            $image_path = 'https://via.placeholder.com/400x300?text=No+Image';
+          }
+      ?>
+          <div class="col-lg-4 col-md-6 col-sm-12" data-aos="zoom-in">
+            <div class="pet-card h-100">
+              <div class="pet-img">
+                <img src="<?= $image_path ?>" alt="<?= $pet_name ?>">
+              </div>
+              <div class="pet-info">
+                <h3><?= $pet_name ?></h3>
+                <p><strong>Breed:</strong> <?= $breed ?></p>
+                <p><strong>Age:</strong> <?= $age ?></p>
+                <p class="desc"><?= $desc ?></p>
+                <button class="adopt-btn" onclick="window.location.href='login/index.php'">Adopt Now</button>
+              </div>
+            </div>
+          </div>
+      <?php
+        }
+      } else {
+        echo "<p class='no-pets'>No pets available for adoption right now. Please check back soon!</p>";
+      }
+      ?>
     </div>
   </div>
 </section>
+
+<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+<script>
+AOS.init({ duration: 900, once: true });
+</script>
+
+</body>
+</html>

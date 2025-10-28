@@ -1,10 +1,8 @@
 <?php
-require '../db_connect.php'; // PDO connection
+require '../functions.php'; // includes db_connect.php and helpers
 
 // Fetch all users
-$stmt = $conn->prepare("SELECT * FROM user_tbl ORDER BY user_id ASC");
-$stmt->execute();
-$users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$users = getAllUsers();
 ?>
 
 <!DOCTYPE html>

@@ -42,8 +42,8 @@
             </div>
             <div class="content">
               <h4>Email Address</h4>
-              <p>support@pawsitiveadoption.ph</p>
-              <p>adopt@pawsitiveadoption.ph</p>
+
+              <p>gallanofredanthony15@gmail.com</p>
             </div>
           </div>
         </div>
@@ -77,8 +77,10 @@
                 <div class="loading">Loading</div>
                 <div class="error-message"></div>
                 <div class="sent-message">Your message has been sent. Thank you!</div>
+                <button type="button" class="btn" onclick="window.location.href='login/index.php'">
+                  Send Message
+                </button>
 
-                <button type="submit" class="btn">Send Message</button>
               </div>
 
             </div>

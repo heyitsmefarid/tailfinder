@@ -1,6 +1,4 @@
-console.log("JS loaded"); // Debug
-
-// ---------------------- MULTI-STEP SIGNUP ----------------------
+console.log("JS loaded");
 const form = document.getElementById('a-form');
 const nextBtns = document.querySelectorAll('.next-step');
 const prevBtns = document.querySelectorAll('.prev-step');
@@ -11,6 +9,7 @@ nextBtns.forEach(btn => {
   btn.addEventListener('click', () => {
     const inputs = formSteps[currentStep].querySelectorAll('input[required]');
     let allFilled = true;
+
     inputs.forEach(input => {
       if (!input.value.trim()) {
         allFilled = false;
@@ -28,6 +27,26 @@ nextBtns.forEach(btn => {
         }
       }
     });
+
+    const contactInput = formSteps[currentStep].querySelector('input[name="contact_number"]');
+    if (contactInput) {
+      const contactValue = contactInput.value.trim();
+      const phPattern = /^09\d{9}$/;
+
+      if (!phPattern.test(contactValue)) {
+        Swal.fire({
+          icon: "error",
+          title: "Invalid Contact Number",
+          text: "Please enter a valid Philippine mobile number (must start with 09 and be 11 digits long).",
+          confirmButtonColor: "#3085d6"
+        });
+        contactInput.style.border = "2px solid red";
+        return; 
+      } else {
+        contactInput.style.border = "";
+      }
+    }
+
     if (allFilled) {
       formSteps[currentStep].classList.remove('form-step-active');
       currentStep++;
@@ -44,21 +63,73 @@ prevBtns.forEach(btn => {
   });
 });
 
-// ---------------------- SIGNUP PASSWORD VALIDATION ----------------------
-form.addEventListener('submit', (e) => {
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const formData = new FormData(form);
   const password = document.getElementById('password').value;
   const confirmPassword = document.getElementById('confirm_password').value;
+
   if (password !== confirmPassword) {
-    e.preventDefault();
     Swal.fire({
       icon: "error",
       title: "Passwords do not match",
       text: "Please ensure both passwords are the same."
     });
+    return;
+  }
+
+  try {
+    const response = await fetch('../register.php', {
+      method: 'POST',
+      body: formData
+    });
+
+    const data = await response.json();
+    console.log("Signup response:", data);
+
+    if (data.status === 'exists') {
+      Swal.fire({
+        icon: "warning",
+        title: "Email Already Registered",
+        text: "This email already exists. Please log in instead.",
+        confirmButtonText: "Go to Login",
+        confirmButtonColor: "#3085d6"
+      }).then(() => {
+        window.location.href = "index.php";
+      });
+
+    } else if (data.status === 'success') {
+      Swal.fire({
+        icon: "success",
+        title: "Verification Required",
+        text: "A verification code has been sent to your email.",
+        timer: 2500,
+        showConfirmButton: false,
+        willClose: () => {
+          window.location.href = "../verify.html";
+        }
+      });
+
+    } else if (data.status === 'error') {
+      Swal.fire({
+        icon: "error",
+        title: "Something went wrong",
+        text: data.message || "Please try again later."
+      });
+    }
+
+  } catch (err) {
+    console.error("Signup Error:", err);
+    Swal.fire({
+      icon: "error",
+      title: "Server Error",
+      text: "Unable to connect to the server."
+    });
   }
 });
 
-// ---------------------- SIGN IN / SIGN UP SWITCH ----------------------
+
 const switchCtn = document.querySelector("#switch-cnt");
 const switchC1 = document.querySelector("#switch-c1");
 const switchC2 = document.querySelector("#switch-c2");
@@ -86,7 +157,6 @@ switchBtn.forEach(btn => {
   });
 });
 
-// ---------------------- LOGIN ERROR / SUCCESS SWEETALERT ----------------------
 document.addEventListener('DOMContentLoaded', () => {
   const body = document.body;
   const loginError = body.dataset.loginError;

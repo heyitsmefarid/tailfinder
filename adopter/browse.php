@@ -1,13 +1,13 @@
 <?php
 require '../db_connect.php';
+$conn = connectDB();
 
-// Initialize filters
 $search_query = $_GET['search'] ?? '';
 $type_filter = $_GET['type'] ?? '';
 $breed_filter = $_GET['breed'] ?? '';
 $age_filter = $_GET['age'] ?? '';
+$gender_filter = $_GET['gender'] ?? ''; 
 
-// Fetch distinct types and breeds for dropdowns
 $type_stmt = $conn->prepare("SELECT DISTINCT type FROM pet_tbl WHERE pet_status='Available'");
 $type_stmt->execute();
 $types = $type_stmt->fetchAll(PDO::FETCH_COLUMN);
@@ -16,7 +16,6 @@ $breed_stmt = $conn->prepare("SELECT DISTINCT breed FROM pet_tbl WHERE pet_statu
 $breed_stmt->execute();
 $breeds = $breed_stmt->fetchAll(PDO::FETCH_COLUMN);
 
-// Build main query
 $query = "SELECT * FROM pet_tbl WHERE pet_status='Available'";
 $params = [];
 
@@ -36,9 +35,14 @@ if ($breed_filter) {
     $params[] = $breed_filter;
 }
 
-if ($age_filter) {
+if ($age_filter !== '') {
     $query .= " AND age=?";
     $params[] = $age_filter;
+}
+
+if ($gender_filter !== '' && ($gender_filter === '1' || $gender_filter === '2')) {
+    $query .= " AND gender=?";
+    $params[] = $gender_filter;
 }
 
 $query .= " ORDER BY pet_id DESC";
@@ -47,13 +51,20 @@ $stmt = $conn->prepare($query);
 $stmt->execute($params);
 $pets = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Fetch logged-in user info
 session_start();
 $user = [];
-if(isset($_SESSION['user_id'])){
+if (isset($_SESSION['user_id'])) {
     $stmtUser = $conn->prepare("SELECT * FROM user_tbl WHERE user_id = ?");
     $stmtUser->execute([$_SESSION['user_id']]);
     $user = $stmtUser->fetch(PDO::FETCH_ASSOC);
+}
+
+function genderLabel($code) {
+    if ($code === null || $code === '') return '';
+   
+    if ((string)$code === '1') return 'Male';
+    if ((string)$code === '2') return 'Female';
+    return $code; 
 }
 ?>
 
@@ -70,32 +81,27 @@ if(isset($_SESSION['user_id'])){
 
 <body class="bg-gray-100 text-gray-800">
 
-<!-- NAVBAR -->
 <header class="navbar">
   <h1 class="logo text-white font-semibold text-lg">🐾 Pet Adoption Portal</h1>
 </header>
 
 <div class="main-container">
 
-<!-- SIDEBAR -->
 <aside class="sidebar">
   <nav>
     <a href="home.php" class="sidebar-link"><i data-lucide="home"></i> Dashboard</a>
     <a href="adoption_request.php" class="sidebar-link"><i data-lucide="heart"></i> My Adoption Requests</a>
     <a href="browse.php" class="sidebar-link active"><i data-lucide="paw-print"></i> Browse Pets</a>
     <a href="messages.php" class="sidebar-link"><i data-lucide="message-circle"></i> Messages</a>
-    <a href="user_profile.php" class="sidebar-link"><i data-lucide="user"></i>Profile</a>
+    <a href="user_profile.php" class="sidebar-link"><i data-lucide="user"></i> Profile</a>
   </nav>
   <a href="logout.php" class="sidebar-link logout-bottom"><i data-lucide="log-out"></i> Logout</a>
-
 </aside>
 
-<!-- MAIN CONTENT -->
 <main class="content-area">
   <section class="dashboard-box">
     <h2 class="section-title">Browse Pets for Adoption</h2>
 
-    <!-- SEARCH FORM -->
     <form method="GET" class="flex gap-2 mb-3">
       <input type="text" name="search" placeholder="Search name, breed, type, age, description..." 
              value="<?= htmlspecialchars($search_query) ?>" 
@@ -103,28 +109,34 @@ if(isset($_SESSION['user_id'])){
       <button type="submit" class="px-3 py-1 rounded bg-blue-500 text-white hover:bg-blue-600 text-sm">Search</button>
     </form>
 
-    <!-- FILTER FORM -->
-    <form method="GET" class="flex gap-2 mb-5 items-center">
+
+    <form method="GET" class="flex gap-2 mb-5 items-center flex-wrap">
       <select name="type" class="p-2 rounded border text-sm">
         <option value="">All Types</option>
         <?php
         $all_types = array_merge(['Others'], $types);
         foreach ($all_types as $type):
         ?>
-          <option value="<?= htmlspecialchars($type) ?>" <?= $type_filter==$type?'selected':'' ?>><?= htmlspecialchars($type) ?></option>
+          <option value="<?= htmlspecialchars($type) ?>" <?= $type_filter == $type ? 'selected' : '' ?>><?= htmlspecialchars($type) ?></option>
         <?php endforeach; ?>
       </select>
 
       <select name="breed" class="p-2 rounded border text-sm">
         <option value="">All Breeds</option>
         <?php foreach ($breeds as $breed): ?>
-          <option value="<?= htmlspecialchars($breed) ?>" <?= $breed_filter==$breed?'selected':'' ?>><?= htmlspecialchars($breed) ?></option>
+          <option value="<?= htmlspecialchars($breed) ?>" <?= $breed_filter == $breed ? 'selected' : '' ?>><?= htmlspecialchars($breed) ?></option>
         <?php endforeach; ?>
       </select>
 
       <input type="number" name="age" placeholder="Age" 
              value="<?= htmlspecialchars($age_filter) ?>" 
              class="p-2 rounded border text-sm" min="0">
+
+      <select name="gender" class="p-2 rounded border text-sm">
+        <option value="">All Genders</option>
+        <option value="1" <?= $gender_filter === '1' ? 'selected' : '' ?>>Male</option>
+        <option value="2" <?= $gender_filter === '2' ? 'selected' : '' ?>>Female</option>
+      </select>
 
       <button type="submit" class="px-3 py-1 rounded bg-green-500 text-white hover:bg-green-600 text-sm">Filter</button>
     </form>
@@ -141,6 +153,7 @@ if(isset($_SESSION['user_id'])){
           <h3><?php echo htmlspecialchars($pet['pet_name']); ?></h3>
           <p><strong>Type:</strong> <?php echo htmlspecialchars($pet['type']); ?></p>
           <p><strong>Breed:</strong> <?php echo htmlspecialchars($pet['breed']); ?></p>
+          <p><strong>Gender:</strong> <?php echo htmlspecialchars(genderLabel($pet['gender'])); ?></p>
           <p><strong>Age:</strong> <?php echo htmlspecialchars($pet['age']); ?> y/old</p>
           <p><?php echo htmlspecialchars($pet['description']); ?></p>
 
@@ -200,5 +213,6 @@ if(isset($_SESSION['user_id'])){
 </div>
 
 <script src="browse.js"></script>
+<script>lucide.createIcons();</script>
 </body>
 </html>

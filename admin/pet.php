@@ -1,12 +1,11 @@
 <?php
 require '../db_connect.php';
+$conn = connectDB();
 
-// Fetch all pets
 $stmt = $conn->prepare("SELECT * FROM pet_tbl ORDER BY pet_id ASC");
 $stmt->execute();
 $pets = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Handle status update
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_status'])) {
     $pet_id = $_POST['pet_id'];
     $new_status = $_POST['pet_status'];
@@ -16,22 +15,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_status'])) {
     exit;
 }
 
-// Handle Add Pet
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_pet'])) {
     $pet_name = $_POST['pet_name'];
     $breed = $_POST['breed'];
     $age = $_POST['age'];
     $gender = $_POST['gender'];
     $description = $_POST['description'];
-    $type = $_POST['type']; // new
+    $type = $_POST['type'];
 
-    // Handle image upload
     $image_name = $_FILES['image']['name'];
     $tmp_name = $_FILES['image']['tmp_name'];
     $upload_dir = '../uploads/';
     move_uploaded_file($tmp_name, $upload_dir.$image_name);
 
-    // Default status: Available
     $status = 'Available';
 
     $stmt = $conn->prepare("INSERT INTO pet_tbl (pet_name, breed, age, gender, image, description, pet_status, type) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
@@ -59,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_pet'])) {
                     <li class="breadcrumb-item active">Pets List</li>
                 </ol>
 
-                <!-- Add Pet Button -->
+               
                 <div class="mb-3">
                     <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addPetModal">
                         <i class="fas fa-plus me-1"></i>Add New Pet
@@ -103,16 +99,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_pet'])) {
                                         </span>
                                     </td>
                                     <td>
-                                        <a href="edit_pet.php?pet_id=<?= $pet['pet_id'] ?>" class="btn btn-primary btn-sm mb-1"><i class="fas fa-edit"></i> Edit</a>
+                                       
+                                        <a href="../api/edit_pet.php?pet_id=<?= $pet['pet_id'] ?>" class="btn btn-primary btn-sm mb-1"><i class="fas fa-edit"></i> Edit</a>
+
                                         <button class="btn btn-warning btn-sm mb-1" data-bs-toggle="modal" data-bs-target="#statusModal<?= $pet['pet_id'] ?>"><i class="fas fa-exchange-alt"></i> Change Status</button>
-                                        <!-- Delete Button triggers modal -->
+
+                                       
                                         <button class="btn btn-danger btn-sm mb-1" data-bs-toggle="modal" data-bs-target="#deleteModal<?= $pet['pet_id'] ?>">
                                             <i class="fas fa-trash"></i> Delete
                                         </button>
                                     </td>
                                 </tr>
 
-                                <!-- Status Modal -->
+                              
                                 <div class="modal fade" id="statusModal<?= $pet['pet_id'] ?>" tabindex="-1" aria-labelledby="statusModalLabel<?= $pet['pet_id'] ?>" aria-hidden="true">
                                   <div class="modal-dialog">
                                     <form method="POST">
@@ -141,7 +140,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_pet'])) {
                                   </div>
                                 </div>
 
-                                <!-- Delete Modal -->
+                              
                                 <div class="modal fade" id="deleteModal<?= $pet['pet_id'] ?>" tabindex="-1" aria-labelledby="deleteModalLabel<?= $pet['pet_id'] ?>" aria-hidden="true">
                                   <div class="modal-dialog">
                                     <div class="modal-content">
@@ -154,7 +153,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_pet'])) {
                                       </div>
                                       <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                        <a href="delete_pet.php?pet_id=<?= $pet['pet_id'] ?>" class="btn btn-danger">Yes, Delete</a>
+                                        
+                                        <a href="../api/delete_pet.php?pet_id=<?= $pet['pet_id'] ?>" class="btn btn-danger">Yes, Delete</a>
                                       </div>
                                     </div>
                                   </div>
@@ -182,10 +182,10 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 </script>
 
-<!-- Add Pet Modal -->
 <div class="modal fade" id="addPetModal" tabindex="-1" aria-labelledby="addPetModalLabel" aria-hidden="true">
   <div class="modal-dialog">
-    <form method="POST" enctype="multipart/form-data">
+   
+    <form method="POST" enctype="multipart/form-data" action="../api/add_pet.php">
         <div class="modal-content">
           <div class="modal-header bg-success text-white">
             <h5 class="modal-title" id="addPetModalLabel"><i class="fas fa-plus me-1"></i>Add New Pet</h5>
@@ -239,3 +239,44 @@ document.addEventListener("DOMContentLoaded", function() {
 
 </body>
 </html>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const status = urlParams.get('status');
+
+    if (status === 'added') {
+        Swal.fire({
+            icon: 'success',
+            title: 'Pet Added Successfully!',
+            text: 'A new pet has been added to the list.',
+            showConfirmButton: false,
+            timer: 2000
+        }).then(() => {
+            window.history.replaceState(null, null, 'pet.php');
+        });
+    } 
+    else if (status === 'edited') {
+        Swal.fire({
+            icon: 'info',
+            title: 'Pet Updated Successfully!',
+            text: 'The pet information has been updated.',
+            showConfirmButton: false,
+            timer: 2000
+        }).then(() => {
+            window.history.replaceState(null, null, 'pet.php');
+        });
+    } 
+    else if (status === 'deleted') {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Pet Deleted Successfully!',
+            text: 'The selected pet has been removed from the list.',
+            showConfirmButton: false,
+            timer: 2000
+        }).then(() => {
+            window.history.replaceState(null, null, 'pet.php');
+        });
+    }
+});
+</script>

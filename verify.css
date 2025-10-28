@@ -6,77 +6,166 @@
 }
 
 body {
-    background: linear-gradient(135deg, #007bff, #4da3ff);
     height: 100vh;
+    background: linear-gradient(-45deg, #007bff, #4da3ff, #8e2de2, #4a00e0);
+    background-size: 400% 400%;
+    animation: gradientShift 10s ease infinite;
     display: flex;
     justify-content: center;
     align-items: center;
+    overflow: hidden;
+    padding: 20px;
 }
 
 .container {
-    text-align: center;
-}
-
-.box {
-    background: white;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
     padding: 35px 45px;
-    border-radius: 15px;
-    width: 350px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-    animation: fadeIn 0.7s ease-in-out;
+    text-align: center;
+    color: white;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+    width: 400px;
+    animation: fadeIn 0.8s ease forwards;
+    transition: all 0.3s ease;
 }
 
-.box h2 {
-    font-weight: 600;
-    color: #007bff;
-    margin-bottom: 8px;
+.container h2 {
+    font-weight: 700;
+    color: #fff;
 }
 
-.box p {
-    font-size: 14px;
-    color: #333;
+.container p {
+    color: #e0e0e0;
     margin-bottom: 20px;
 }
 
 .otp-field {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 20px 0;
 }
 
 .otp-field input {
-    width: 40px;
-    height: 45px;
-    font-size: 20px;
-    border: 2px solid #a8d0ff;
-    border-radius: 8px;
+    flex: 1 1 calc(16.6% - 8px);
+    min-width: 30px;
+    max-width: 40px;
+    height: 55px;
+    font-size: 22px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    color: #fff;
     text-align: center;
-    transition: 0.3s;
+    transition: all 0.3s ease;
+    outline: none;
 }
 
 .otp-field input:focus {
-    border-color: #007bff;
-    outline: none;
+    border-color: #fff;
     transform: scale(1.1);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
 }
 
 .verify-btn {
     width: 100%;
-    padding: 10px 0;
-    background: #007bff;
+    padding: 12px;
+    background: #ffffff;
+    color: #007bff;
     border: none;
-    color: white;
-    border-radius: 8px;
+    border-radius: 10px;
+    font-size: 18px;
+    font-weight: 600;
     cursor: pointer;
-    font-size: 16px;
-    transition: 0.3s;
+    transition: all 0.3s ease;
 }
 
 .verify-btn:hover {
-    background: #005fcc;
+    background: #00c6ff;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(0, 123, 255, 0.4);
+}
+
+.resend-text {
+    margin-top: 15px;
+    font-size: 15px;
+}
+
+#resendBtn {
+    background: none;
+    border: none;
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+#resendBtn:disabled {
+    color: #bbb;
+    cursor: not-allowed;
+}
+
+#timer {
+    color: #fffa;
+}
+
+@keyframes gradientShift {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(25px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(25px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        width: 100%;
+        padding: 25px 20px;
+    }
+
+    h2 {
+        font-size: 22px;
+    }
+
+    .otp-field {
+        gap: 6px;
+        justify-content: center;
+    }
+
+    .otp-field input {
+        flex: 1 1 calc(15% - 5px);
+        max-width: 45px;
+        height: 50px;
+        font-size: 20px;
+    }
+
+    .verify-btn {
+        font-size: 16px;
+        padding: 10px;
+    }
+
+    .resend-text {
+        font-size: 13px;
+    }
 }

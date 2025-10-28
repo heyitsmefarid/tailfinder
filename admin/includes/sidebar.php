@@ -34,6 +34,7 @@
                         <a class="nav-link" href="report_pets.php">Pets Report</a>
                         <a class="nav-link" href="report_users.php">Users Report</a>
                         <a class="nav-link" href="report_adoptions.php">Adoptions Report</a>
+                         <a class="nav-link" href="report_inquiry.php">Inquiry Report</a>
                     </nav>
                 </div>
             </div>

@@ -1,77 +1,77 @@
 <?php
 session_start();
-require 'db_connect.php';
+require_once 'db_connect.php';
+require_once 'functions.php';
+
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-require 'phpmailer/src/PHPMailer.php';
-require 'phpmailer/src/Exception.php';
-require 'phpmailer/src/SMTP.php';
+// Include PHPMailer
+require_once 'phpmailer/src/PHPMailer.php';
+require_once 'phpmailer/src/Exception.php';
+require_once 'phpmailer/src/SMTP.php';
+
+header('Content-Type: application/json');
+
+$conn = connectDB();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $first_name = trim($_POST['first_name']);
-    $last_name = trim($_POST['last_name']);
-    $middle_initial = trim($_POST['middle_initial']);
-    $contact_number = trim($_POST['contact_number']);
-    $street = trim($_POST['street']);
-    $barangay = trim($_POST['barangay']);
-    $city = trim($_POST['city']);
-    $province = trim($_POST['province']);
-    $email = trim($_POST['email']);
+
+    $first_name = sanitizeInput($_POST['first_name']);
+    $last_name = sanitizeInput($_POST['last_name']);
+    $middle_initial = sanitizeInput($_POST['middle_initial']);
+    $contact_number = sanitizeInput($_POST['contact_number']);
+    $street = sanitizeInput($_POST['street']);
+    $barangay = sanitizeInput($_POST['barangay']);
+    $city = sanitizeInput($_POST['city']);
+    $province = sanitizeInput($_POST['province']);
+    $email = sanitizeInput($_POST['email']);
     $password = $_POST['password'];
     $confirm_password = $_POST['confirm_password'];
 
-    // Basic validations
-    if ($password !== $confirm_password) {
-        $_SESSION['error'] = "Passwords do not match!";
-        header("Location: login/index.html");
+    if (!passwordsMatch($password, $confirm_password)) {
+        echo json_encode(["status" => "error", "message" => "Passwords do not match!"]);
         exit;
     }
 
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $_SESSION['error'] = "Invalid email!";
-        header("Location: login/index.html");
+    if (!isValidEmail($email)) {
+        echo json_encode(["status" => "error", "message" => "Invalid email format!"]);
         exit;
     }
 
-    // Check if email already exists
-    $check = $conn->prepare("SELECT * FROM user_tbl WHERE email=:email");
-    $check->execute([':email'=>$email]);
+    $check = $conn->prepare("SELECT * FROM user_tbl WHERE email = :email");
+    $check->execute([':email' => $email]);
     if ($check->rowCount() > 0) {
-        $_SESSION['error'] = "Email already exists!";
-        header("Location: login/index.php");
+        echo json_encode(["status" => "exists", "message" => "Email already exists! Please log in instead."]);
         exit;
     }
 
-    // Save user temporarily in session
     $_SESSION['temp_user'] = [
-        'first_name'=>$first_name,
-        'last_name'=>$last_name,
-        'middle_initial'=>$middle_initial,
-        'contact_number'=>$contact_number,
-        'street'=>$street,
-        'barangay'=>$barangay,
-        'city'=>$city,
-        'province'=>$province,
-        'email'=>$email,
-        'password'=>password_hash($password, PASSWORD_DEFAULT),
-        'role'=>"Adopter",
-        'date_registered'=>date('Y-m-d')
+        'first_name' => $first_name,
+        'last_name' => $last_name,
+        'middle_initial' => $middle_initial,
+        'contact_number' => $contact_number,
+        'street' => $street,
+        'barangay' => $barangay,
+        'city' => $city,
+        'province' => $province,
+        'email' => $email,
+        'password' => password_hash($password, PASSWORD_DEFAULT),
+        'role' => "Adopter",
+        'date_registered' => date('Y-m-d')
     ];
 
-    // Generate OTP
-    $otp = rand(100000, 999999);
+    $otp = generateOTP();
     $_SESSION['otp'] = $otp;
-    $_SESSION['otp_time'] = time(); // for potential expiration
+    $_SESSION['otp_time'] = time();
 
-    // Send OTP email
     try {
         $mail = new PHPMailer(true);
         $mail->isSMTP();
         $mail->Host = "smtp.gmail.com";
         $mail->SMTPAuth = true;
         $mail->Username = "gallanofredanthony15@gmail.com";
-        $mail->Password = "nnhmdijzjuhczxqe"; // App password
+        $mail->Password = "nnhmdijzjuhczxqe";
         $mail->SMTPSecure = "ssl";
         $mail->Port = 465;
 
@@ -83,14 +83,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $mail->send();
 
-        // Redirect to verification page
-        header("Location: verify.html");
-        exit;
-
-    } catch(Exception $e) {
-        $_SESSION['error'] = "Mail error: " . $mail->ErrorInfo;
-        header("Location: login/index.php");
-        exit;
+        echo json_encode(["status" => "success", "message" => "OTP sent successfully. Redirecting to verification page..."]);
+    } catch (Exception $e) {
+        echo json_encode(["status" => "error", "message" => "Mailer Error: " . $mail->ErrorInfo]);
     }
 }
-?>

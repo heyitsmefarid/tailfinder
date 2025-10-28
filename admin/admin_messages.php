@@ -1,7 +1,7 @@
 <?php
 session_start();
 require '../db_connect.php';
-
+$conn = connectDB();
 // Handle admin response
 if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['inquiry_id'], $_POST['admin_response'])){
     $inquiry_id = $_POST['inquiry_id'];

@@ -1,22 +1,19 @@
 <?php
 session_start();
-require '../db_connect.php';
+require '../functions.php';
+$conn = connectDB();
 
 $error = '';
 $success = '';
 $user = [];
 
-// Step 1: Handle verification form (email + password)
+// Step 1: Handle login verification
 if (isset($_POST['verify'])) {
-    $email = trim($_POST['email'] ?? '');
+    $email = sanitizeInput($_POST['email'] ?? '');
     $password = trim($_POST['password'] ?? '');
 
-    $stmt = $conn->prepare("SELECT * FROM user_tbl WHERE email = ?");
-    $stmt->execute([$email]);
-    $user = $stmt->fetch(PDO::FETCH_ASSOC);
-
+    $user = getUserByEmail($conn, $email);
     if ($user && password_verify($password, $user['password'])) {
-        // Credentials are correct, store user_id in session
         $_SESSION['user_id'] = $user['user_id'];
     } else {
         $error = "Invalid email or password!";
@@ -24,48 +21,38 @@ if (isset($_POST['verify'])) {
     }
 }
 
-// Step 2: If user_id is in session, fetch their data
+// Step 2: Fetch user if logged in
 if (isset($_SESSION['user_id']) && empty($_POST['verify'])) {
-    $user_id = $_SESSION['user_id'];
-    $stmt = $conn->prepare("SELECT * FROM user_tbl WHERE user_id = ?");
-    $stmt->execute([$user_id]);
-    $user = $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
+    $user = getUserById($conn, $_SESSION['user_id']) ?: [];
 }
 
-// Step 3: Handle profile update form
+// Step 3: Update profile
 if (isset($_POST['update']) && isset($_SESSION['user_id'])) {
-    $user_id = $_SESSION['user_id'];
+    $data = [
+        'first_name' => sanitizeInput($_POST['first_name']),
+        'last_name' => sanitizeInput($_POST['last_name']),
+        'middle_initial' => sanitizeInput($_POST['middle_initial']),
+        'contact_number' => sanitizeInput($_POST['contact_number']),
+        'street' => sanitizeInput($_POST['street']),
+        'barangay' => sanitizeInput($_POST['barangay']),
+        'city' => sanitizeInput($_POST['city']),
+        'province' => sanitizeInput($_POST['province']),
+    ];
 
-    $first_name = $_POST['first_name'] ?? '';
-    $last_name = $_POST['last_name'] ?? '';
-    $middle_initial = $_POST['middle_initial'] ?? '';
-    $contact_number = $_POST['contact_number'] ?? '';
-    $street = $_POST['street'] ?? '';
-    $barangay = $_POST['barangay'] ?? '';
-    $city = $_POST['city'] ?? '';
-    $province = $_POST['province'] ?? '';
-    $new_password = trim($_POST['new_password'] ?? '');
-    $confirm_password = trim($_POST['confirm_password'] ?? '');
+    $newPass = trim($_POST['new_password'] ?? '');
+    $confirm = trim($_POST['confirm_password'] ?? '');
 
-    if (!empty($new_password)) {
-        if ($new_password !== $confirm_password) {
-            $error = "Passwords do not match!";
-        } else {
-            $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
-            $stmt = $conn->prepare("UPDATE user_tbl SET first_name=?, last_name=?, middle_initial=?, contact_number=?, street=?, barangay=?, city=?, province=?, password=? WHERE user_id=?");
-            $stmt->execute([$first_name, $last_name, $middle_initial, $contact_number, $street, $barangay, $city, $province, $hashed_password, $user_id]);
-            $success = "Profile and password updated successfully!";
-        }
+    if ($newPass && $newPass === $confirm) {
+        updateUser($conn, $data, $_SESSION['user_id'], $newPass);
+        $success = "Profile and password updated!";
+    } elseif ($newPass && $newPass !== $confirm) {
+        $error = "Passwords do not match!";
     } else {
-        $stmt = $conn->prepare("UPDATE user_tbl SET first_name=?, last_name=?, middle_initial=?, contact_number=?, street=?, barangay=?, city=?, province=? WHERE user_id=?");
-        $stmt->execute([$first_name, $last_name, $middle_initial, $contact_number, $street, $barangay, $city, $province, $user_id]);
-        $success = "Profile updated successfully!";
+        updateUser($conn, $data, $_SESSION['user_id']);
+        $success = "Profile updated!";
     }
 
-    // Refresh data
-    $stmt = $conn->prepare("SELECT * FROM user_tbl WHERE user_id = ?");
-    $stmt->execute([$user_id]);
-    $user = $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
+    $user = getUserById($conn, $_SESSION['user_id']);
 }
 ?>
 
@@ -95,23 +82,8 @@ if (isset($_POST['update']) && isset($_SESSION['user_id'])) {
         <a href="browse.php" class="sidebar-link"><i data-lucide="paw-print"></i> Browse Pets</a>
         <a href="messages.php" class="sidebar-link"><i data-lucide="message-circle"></i> Messages</a>
         <a href="user_profile.php" class="sidebar-link active" ><i data-lucide="user"></i> Profile</a>
-        <a href="#" class="sidebar-link"> </a>
-    <a href="#" class="sidebar-link"> </a>
-    <a href="#" class="sidebar-link"></a>
-           <a href="#" class="sidebar-link"> </a>
-    <a href="#" class="sidebar-link"> </a>
-    <a href="#" class="sidebar-link"></a>
-  </nav>       <a href="#" class="sidebar-link"> </a>
-    <a href="#" class="sidebar-link"> </a>
-    <a href="#" class="sidebar-link"></a>
-    <a href="#" class="sidebar-link"> </a>
-    <a href="#" class="sidebar-link"></a>
-           <a href="#" class="sidebar-link"> </a>
-
-  </nav>
   </nav>
  <a href="logout.php" class="sidebar-link logout-bottom"><i data-lucide="log-out"></i> Logout</a>
-
 </aside>
 
   <main class="flex-1 p-6">

@@ -1,16 +1,17 @@
 <?php
 header('Content-Type: application/json');
 require '../db_connect.php'; // ✅ connects to the same DB as adoption_request.php
-
+$conn = connectDB();
 // 🟩 Summary Counts
 $summary = [
     'totalPets'     => (int) $conn->query("SELECT COUNT(*) FROM pet_tbl")->fetchColumn(),
     'totalAdopters' => (int) $conn->query("SELECT COUNT(*) FROM user_tbl WHERE role = 'Adopter'")->fetchColumn(),
-    'pending'       => (int) $conn->query("SELECT COUNT(*) FROM adoption_request_tbl WHERE adoption_status = 'Pending'")->fetchColumn(),
-    'approved'      => (int) $conn->query("SELECT COUNT(*) FROM adoption_request_tbl WHERE adoption_status = 'Approved'")->fetchColumn(),
-    'dogs'          => (int) $conn->query("SELECT COUNT(*) FROM pet_tbl WHERE type = 'Dog'")->fetchColumn(),
-    'cats'          => (int) $conn->query("SELECT COUNT(*) FROM pet_tbl WHERE type = 'Cat'")->fetchColumn(),
-    'others'        => (int) $conn->query("SELECT COUNT(*) FROM pet_tbl WHERE type NOT IN ('Dog','Cat')")->fetchColumn(),
+    'available'     => (int) $conn->query("SELECT COUNT(*) FROM pet_tbl WHERE pet_status = 'Available'")->fetchColumn(),
+    'pending'       => (int) $conn->query("SELECT COUNT(*) FROM adoption_request_tbl WHERE LOWER(TRIM(adoption_status)) = 'pending'")->fetchColumn(),
+    'approved'      => (int) $conn->query("SELECT COUNT(*) FROM adoption_request_tbl WHERE LOWER(TRIM(adoption_status)) = 'approved'")->fetchColumn(),
+    'dogs'          => (int) $conn->query("SELECT COUNT(*) FROM pet_tbl WHERE LOWER(TRIM(type)) = 'dog'")->fetchColumn(),
+    'cats'          => (int) $conn->query("SELECT COUNT(*) FROM pet_tbl WHERE LOWER(TRIM(type)) = 'cat'")->fetchColumn(),
+    'others'        => (int) $conn->query("SELECT COUNT(*) FROM pet_tbl WHERE LOWER(TRIM(type)) NOT IN ('dog','cat')")->fetchColumn(),
 ];
 
 // 🟦 Bar Chart — Pets Adopted Per Month
@@ -42,7 +43,7 @@ $line = $lineStmt->fetchAll(PDO::FETCH_ASSOC);
 
 // 🟪 Table — Recent Activities
 $tableStmt = $conn->query("
-    SELECT p.pet_name, p.type, p.pet_status, u.first_name, u.last_name, a.application_date
+    SELECT p.pet_name, p.type, p.pet_status, u.first_name, u.last_name, a.application_date, a.adoption_status
     FROM adoption_request_tbl a
     JOIN pet_tbl p ON a.pet_id = p.pet_id
     JOIN user_tbl u ON a.user_id = u.user_id

@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // Summary
       document.getElementById('totalPets').textContent = data.summary.totalPets;
       document.getElementById('totalAdopters').textContent = data.summary.totalAdopters;
+      document.getElementById('available').textContent = data.summary.available;
       document.getElementById('pending').textContent = data.summary.pending;
       document.getElementById('approved').textContent = data.summary.approved;
       document.getElementById('dogs').textContent = data.summary.dogs;

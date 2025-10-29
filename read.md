@@ -144,3 +144,35 @@ application_date	DATE	                                                  Date whe
 adoption_status	  ENUM('Approved', 'Rejected', 'Pending', '')	            Status of the adoption application
 user_id	          INT (FK)	                                              ID of the requesting user
 pet_id	          INT (FK)	                                              ID of the pet being requested for adoption
+
+PHP Functions and Their Purposes
+Function	                                    File	                  Description
+connectDB()	                                  db_connect.php	        Establishes a secure PDO connection to MySQL
+sanitizeInput($data)	                        functions.php	          Cleans user input and prevents SQL injection
+registerUser()	                              register.php	          Inserts new adopter account into user_tbl
+verifyUser($email, $code)	                    verify.php	            Verifies user account using verification code
+loginUser($email, $password)	                login.php	              Authenticates user credentials and starts a session
+fetchAllPets()	                              pets.php	              Retrieves all pets from pet_tbl
+getPetById($pet_id)	                          pet_details.php       	Fetches single pet information
+submitAdoptionRequest($user_id, $pet_id)	    adopt.php	              Creates an adoption request record
+getUserRequests($user_id)	                    adoptions.php	          Displays adoption requests by user
+updatePetStatus($pet_id, $status)	            update_pet.php	        Changes pet availability
+sendInquiry($user_id, $content)	               inquiry.php	          Saves user inquiry message
+
+API Endpoints and Descriptions
+Endpoint	                             Method	            Description
+register.php	                         POST	              Registers a new user account
+verify.php	                           POST	              Verifies user account via verification code
+login.php	                             POST	              Logs in a user and starts a session
+pets.php	                             GET	              Fetches all available pets
+pet_details.php?id={pet_id}	           GET	              Retrieves specific pet details
+adopt.php	                             POST	              Submits a new adoption request
+adoptions.php	                         GET	              Retrieves user’s adoption request list
+update_pet.php	                       POST	              Updates pet status (admin only)
+delete_pet.php	                       POST	              Removes pet record from database
+messages.php	                         POST	              Sends an inquiry message
+admin_messages.php	                   POST	              Admin sends a reply to user inquiry
+reports_adoption.php	                 GET	              Generates adoption reports for admin use
+reports_user.php                       GET	              Generates user reports for admin use
+reports_pet.php	                       GET	              Generates pet reports for admin use
+reports_inquiry.php	                   GET	              Generates inquiry reports for admin use
